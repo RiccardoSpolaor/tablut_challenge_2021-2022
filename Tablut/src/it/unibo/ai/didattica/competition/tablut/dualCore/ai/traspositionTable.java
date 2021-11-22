@@ -3,16 +3,16 @@ package it.unibo.ai.didattica.competition.tablut.dualCore.ai;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class traspositionTable {
-    SortedMap<Integer,tableEntry> dictionary; // initializzare
+public class TraspositionTable {
+    SortedMap<Integer,TableEntry> dictionary; // initializzare
     Integer size;
 
-    public traspositionTable(Integer size) {
-        this.dictionary = new TreeMap<Integer,tableEntry>();
+    public TraspositionTable(Integer size) {
+        this.dictionary = new TreeMap<Integer,TableEntry>();
         this.size = size;
     }
     
-    public tableEntry getItem(Integer key) {
+    public TableEntry getItem(Integer key) {
         try {
             return this.dictionary.get(key);
         } catch (Exception e) {
@@ -20,7 +20,7 @@ public class traspositionTable {
         }
     }
 
-    public void setItem(Integer key, tableEntry value) {
+    public void setItem(Integer key, TableEntry value) {
         this.dictionary.put(key, value);
         if (this.dictionary.size() > size){
             this.dictionary.remove(this.dictionary.firstKey());
