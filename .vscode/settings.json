@@ -1,0 +1,10 @@
+{
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar"
+        ],
+        "exclude": [
+            "c:\\Tablut2019\\lib\\gson-2.2.2.jar"
+        ]
+    }
+}
