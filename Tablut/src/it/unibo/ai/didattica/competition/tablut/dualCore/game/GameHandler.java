@@ -1,5 +1,9 @@
 package it.unibo.ai.didattica.competition.tablut.dualCore.game;
 
+import java.util.List;
+
+import it.unibo.ai.didattica.competition.tablut.domain.Action;
+import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 
 public class GameHandler {
@@ -28,6 +32,14 @@ public class GameHandler {
 
     public static Integer checkVictory(Pawn[][] board) {
 
+        return null;
+    }
+
+    public static List<Action> getAvailableActions(Pawn[][] board, int color) {
+        return null;
+    }
+
+    public static State applyOperation(State state, Action parentOperation) {
         return null;
     }
 

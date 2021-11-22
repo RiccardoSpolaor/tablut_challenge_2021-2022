@@ -2,7 +2,13 @@ package it.unibo.ai.didattica.competition.tablut.dualCore.ai;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
+import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
+import it.unibo.ai.didattica.competition.tablut.dualCore.game.GameHandler;
+
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,9 +33,6 @@ public final class Negamax {
     public class NegamaxResult {
         private Action action;
         private Float value;
-
-        public NegamaxResult() {
-        };
 
         public NegamaxResult(Action action, Float value) {
             this.action = action;
@@ -61,12 +64,14 @@ public final class Negamax {
         ArrayList<Node> childNodes = new ArrayList<Node>();
         ArrayList<Future<NegamaxResult>> futureResults = new ArrayList<>(childNodes.size());
 
+        Long started = Instant.now().getEpochSecond();
+
         try {
             for (Node child : childNodes) {
                 Future<NegamaxResult> result = executor.submit(new Callable<NegamaxResult>() {
                     @Override
                     public NegamaxResult call() {
-                        NegamaxResult value = parallelNegamax();
+                        NegamaxResult value = parallelNegamax(child, started, color);
                         return value;
                     }
                 });
@@ -97,7 +102,13 @@ public final class Negamax {
         return bestResult.getAction();
     }
 
-    private Float negamax(Node node, Float started, int color, Float alpha, Float beta, int depth,
+    private NegamaxResult parallelNegamax(Node node, Long started, int depth) {
+        ArrayList<Integer> previousStates = null;
+        return new NegamaxResult(node.getParentOperation(), -this.negamax(node, started, -color,
+                Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, depth, previousStates));
+    }
+
+    private Float negamax(Node node, Long started, int color, Float alpha, Float beta, int depth,
             ArrayList<Integer> previousStates) {
         Float alphaOrig = alpha;
 
@@ -129,11 +140,12 @@ public final class Negamax {
         if (depth == 0)
             return color * node.getHeuristicValue();
 
-        List<Action> availableActions = GameHandler.get_available_actions(node.state.board, color);
+        List<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(), color);
         List<Node> childNodes = new ArrayList<>(availableActions.size());
 
         for (Action action : availableActions) {
-            Node n = new Node(GameHandler.applyOperation(node.getState(), node.getParentOperation()), node, action);
+            Node n = new Node(GameHandler.applyOperation(node.getState(), node.getParentOperation()), node.getState(),
+                    action);
             Float heuristic = heuristicsTable.getItem(n.getId());
             if (heuristic == null) {
                 heuristic = Heuristics.getWhiteHeuristicValue(n.getState().getBoard(), n.getParentState().getBoard());
