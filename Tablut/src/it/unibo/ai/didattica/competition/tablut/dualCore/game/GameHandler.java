@@ -1,5 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.dualCore.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
@@ -7,6 +8,16 @@ import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 
 public class GameHandler {
+
+    private final static ArrayList<Integer> previousStates = new ArrayList<>();
+
+    public static ArrayList<Integer> getPreviousStates() {
+        return previousStates;
+    }
+
+    public static void updatePreviousStates(State state) {
+       previousStates.add(state.hashCode());
+    }
 
     private final int[][] camps;
 
@@ -35,7 +46,7 @@ public class GameHandler {
         return null;
     }
 
-    public static List<Action> getAvailableActions(Pawn[][] board, int color) {
+    public static ArrayList<Action> getAvailableActions(Pawn[][] board, int color) {
         return null;
     }
 

@@ -2,21 +2,18 @@ package it.unibo.ai.didattica.competition.tablut.dualCore.ai;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.dualCore.game.GameHandler;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.RecursiveTask;
 
 public final class Negamax {
     private static final int TABLE_SIZE = 1_000_000;
+    private static final int DEPTH = 4;
 
     private final int color;
     private final int timeout;
@@ -30,7 +27,7 @@ public final class Negamax {
         heuristicsTable = new HeuristicsTable(TABLE_SIZE);
     }
 
-    public class NegamaxResult {
+    public static class NegamaxResult {
         private Action action;
         private Float value;
 
@@ -57,24 +54,21 @@ public final class Negamax {
 
     }
 
-    public final Action findBestMove(State state, ArrayList<Integer> previousStates) {
+    public Action findBestMove(State state) {
+
+        Node root = new Node(state, state, null);
 
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-        ArrayList<Node> childNodes = new ArrayList<Node>();
+        ArrayList<Action> availableActions = GameHandler.getAvailableActions(root.getState().getBoard(), color);
+        ArrayList<Node> childNodes = getSortedChildNodes(root, availableActions, color);
         ArrayList<Future<NegamaxResult>> futureResults = new ArrayList<>(childNodes.size());
 
         Long started = Instant.now().getEpochSecond();
 
         try {
             for (Node child : childNodes) {
-                Future<NegamaxResult> result = executor.submit(new Callable<NegamaxResult>() {
-                    @Override
-                    public NegamaxResult call() {
-                        NegamaxResult value = parallelNegamax(child, started, color);
-                        return value;
-                    }
-                });
+                Future<NegamaxResult> result = executor.submit(() -> parallelNegamax(child, started));
                 futureResults.add(result);
             }
         } finally {
@@ -102,14 +96,43 @@ public final class Negamax {
         return bestResult.getAction();
     }
 
-    private NegamaxResult parallelNegamax(Node node, Long started, int depth) {
-        ArrayList<Integer> previousStates = null;
-        return new NegamaxResult(node.getParentOperation(), -this.negamax(node, started, -color,
-                Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, depth, previousStates));
+    private NegamaxResult parallelNegamax(Node node, Long started) {
+        return new NegamaxResult(
+                node.getParentOperation(),
+                -this.negamax(node, started, -color, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, DEPTH)
+        );
     }
 
-    private Float negamax(Node node, Long started, int color, Float alpha, Float beta, int depth,
-            ArrayList<Integer> previousStates) {
+    private ArrayList<Node> getSortedChildNodes (Node root, ArrayList<Action> availableActions, int current_color) {
+        ArrayList<Node> childNodes = new ArrayList<>(availableActions.size());
+
+        for (Action action : availableActions) {
+            Node n = new Node(GameHandler.applyOperation(root.getState(), root.getParentOperation()), root.getState(),
+                    action);
+            Float heuristic = heuristicsTable.getItem(n.getId());
+            if (heuristic == null) {
+                heuristic = Heuristics.getHeuristicValue(n.getState().getBoard(), n.getParentState().getBoard(), current_color);
+                heuristicsTable.setItem(n.getId(), heuristic);
+            }
+            n.setHeuristicValue(heuristic);
+            childNodes.add(n);
+        }
+
+        // ToDo check if the sorting is correct;
+        childNodes.sort((o1, o2) -> {
+            if (Objects.equals(o1.getHeuristicValue(), o2.getHeuristicValue()))
+                return 0;
+            if (o1.getHeuristicValue() > o2.getHeuristicValue()) {
+                return current_color;
+            } else {
+                return -current_color;
+            }
+        });
+
+        return childNodes;
+    }
+
+    private Float negamax(Node node, Long started, int current_color, Float alpha, Float beta, int depth) {
         Float alphaOrig = alpha;
 
         TableEntry tableEntry = traspositionTable.getItem(node.getId());
@@ -129,51 +152,28 @@ public final class Negamax {
         }
 
         /* Draw */
-        if (previousStates.contains(node.getId()))
+        if (GameHandler.getPreviousStates().contains(node.getId()))
             return 0f;
 
         int victory = node.isTerminal();
 
         if (Math.abs(victory) == 1)
-            return color * victory * Math.max(depth, 1f);
+            return current_color * victory * Math.max(depth, 1f);
 
         if (depth == 0)
-            return color * node.getHeuristicValue();
+            return current_color * node.getHeuristicValue();
 
-        List<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(), color);
-        List<Node> childNodes = new ArrayList<>(availableActions.size());
+        ArrayList<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(), current_color);
+        ArrayList<Node> childNodes = getSortedChildNodes(node, availableActions, current_color);
 
-        for (Action action : availableActions) {
-            Node n = new Node(GameHandler.applyOperation(node.getState(), node.getParentOperation()), node.getState(),
-                    action);
-            Float heuristic = heuristicsTable.getItem(n.getId());
-            if (heuristic == null) {
-                heuristic = Heuristics.getWhiteHeuristicValue(n.getState().getBoard(), n.getParentState().getBoard());
-                heuristicsTable.setItem(n.getId(), heuristic);
-            }
-            n.setHeuristicValue(heuristic);
-            childNodes.add(n);
-        }
-
-        // ToDo check if the sorting is correct;
-        childNodes.sort((o1, o2) -> {
-            if (Objects.equals(o1.getHeuristicValue(), o2.getHeuristicValue()))
-                return 0;
-            if (o1.getHeuristicValue() > o2.getHeuristicValue()) {
-                return color;
-            } else {
-                return -color;
-            }
-        });
-
-        float bestValue = Float.MIN_VALUE;
+        float bestValue = Float.NEGATIVE_INFINITY;
         for (Node child : childNodes) {
             if (Instant.now().getEpochSecond() - started >= timeout) {
-                if (bestValue == Float.MIN_VALUE)
-                    return Float.MIN_VALUE * this.color * color;
+                if (bestValue == Float.NEGATIVE_INFINITY)
+                    return Float.NEGATIVE_INFINITY * this.color * current_color;
                 break;
             }
-            float val = -negamax(child, started, -color, -beta, -alpha, depth - 1, previousStates);
+            float val = -negamax(child, started, -current_color, -beta, -alpha, depth - 1);
             bestValue = Math.max(bestValue, val);
             alpha = Math.max(alpha, bestValue);
             if (alpha >= beta)
@@ -193,6 +193,5 @@ public final class Negamax {
 
         traspositionTable.setItem(node.getId(), tableEntry);
         return bestValue;
-
     }
 }

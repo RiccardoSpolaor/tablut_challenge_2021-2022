@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 public class TablutSmartClient extends TablutClient {
 
     private final static String ERROR_MESSAGE = "usage: ./runmyplayer {black,white} [timeout] [ip_address]\n";
+    private static int timeout = 60;
 
     public TablutSmartClient(String player, String name, int timeout, String ipAddress) throws UnknownHostException, IOException {
         super(player, name, timeout, ipAddress);
@@ -17,7 +18,6 @@ public class TablutSmartClient extends TablutClient {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         String player = "", name = "Dual Core", ipAddress = "127.0.0.1";
-        int timeout = 60;
         if (args.length == 0) {
             System.out.println("the following arguments are required: role (WHITE or BLACK)!\n");
             System.out.println(TablutSmartClient.ERROR_MESSAGE);
@@ -62,7 +62,7 @@ public class TablutSmartClient extends TablutClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Player player = new Player(getPlayer());
+        Player player = new Player(getPlayer(), timeout);
         State state;
 
         System.out.println("You are player " + this.getPlayer().toString() + "!");
