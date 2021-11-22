@@ -1,5 +1,5 @@
 package it.unibo.ai.didattica.competition.tablut.dualCore.test;
 
-public class gameTest {
+public class GameTest {
     
 }

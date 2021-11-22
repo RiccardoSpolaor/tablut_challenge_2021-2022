@@ -1,5 +1,5 @@
 package it.unibo.ai.didattica.competition.tablut.dualCore.game;
 
-public class player {
+public class GameState {
     
 }
