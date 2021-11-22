@@ -1,8 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.dualCore.ai;
-
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-
 import java.util.ArrayList;
 
 public final class Negamax {
