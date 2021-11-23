@@ -8,7 +8,6 @@ import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 
 public class GameHandler {
-
     private final static ArrayList<Integer> previousStates = new ArrayList<>();
 
     public static ArrayList<Integer> getPreviousStates() {
