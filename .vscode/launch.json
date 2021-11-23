@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch DualCoreTablut",
+            "request": "launch",
+            "mainClass": "it.unibo.ai.didattica.competition.tablut.dualCore.DualCoreTablut",
+            "projectName": "Tablut2019"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"

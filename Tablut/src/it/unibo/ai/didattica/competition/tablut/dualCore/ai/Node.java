@@ -4,6 +4,10 @@ import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.dualCore.game.GameHandler;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.security.*;
+
 public class Node {
     private State state;
     private State parentState;
@@ -61,11 +65,16 @@ public class Node {
     }
 
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.state.hashCode();
-        result = prime * result + this.parentState.hashCode();
-        return result;
+        String toHash = this.state.toString() + this.parentState.toString();
+
+        try {
+            byte[] bytesOfMessage = toHash.getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] theMD5digest = md.digest(bytesOfMessage);
+            return ByteBuffer.wrap(theMD5digest).getInt();
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            return (int) System.currentTimeMillis();
+        }
     }
 
     public Integer isTerminal() {

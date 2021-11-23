@@ -10,9 +10,10 @@ import java.net.UnknownHostException;
 public class TablutSmartClient extends TablutClient {
 
     private final static String ERROR_MESSAGE = "usage: ./runmyplayer {black,white} [timeout] [ip_address]\n";
-    private static int timeout = 60;
+    private static int timeout = 30;
 
-    public TablutSmartClient(String player, String name, int timeout, String ipAddress) throws UnknownHostException, IOException {
+    public TablutSmartClient(String player, String name, int timeout, String ipAddress)
+            throws UnknownHostException, IOException {
         super(player, name, timeout, ipAddress);
     }
 
@@ -29,14 +30,14 @@ public class TablutSmartClient extends TablutClient {
         }
 
         if (args.length > 1) {
-            if (args.length >= 4){
+            if (args.length >= 4) {
                 System.out.println("too many arguments.\n");
                 System.out.println(TablutSmartClient.ERROR_MESSAGE);
                 System.exit(-1);
             }
             try {
                 timeout = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 System.out.println("timeout must be a positive integer value!\n");
                 System.out.println(TablutSmartClient.ERROR_MESSAGE);
                 System.exit(-1);

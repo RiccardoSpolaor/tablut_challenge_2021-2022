@@ -6,8 +6,7 @@ import it.unibo.ai.didattica.competition.tablut.dualCore.client.TablutSmartClien
 
 public class DualCoreTablut {
     public static void main(String[] args) throws UnknownHostException, ClassNotFoundException, IOException {
-        String[] array = new String[]{"WHITE"};
+        String[] array = new String[] { "WHITE" };
         TablutSmartClient.main(array);
     }
 }
-
