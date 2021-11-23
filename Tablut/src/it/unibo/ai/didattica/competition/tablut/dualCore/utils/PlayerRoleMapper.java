@@ -4,10 +4,11 @@ import it.unibo.ai.didattica.competition.tablut.domain.State;
 
 public class PlayerRoleMapper {
     public static int getColor(State.Turn role) throws IllegalArgumentException {
-        return switch (role) {
-            case WHITE -> 1;
-            case BLACK -> -1;
-            default -> throw new IllegalArgumentException("The player color should be white or black.");
-        };
+        if (role == State.Turn.WHITE)
+            return 1;
+        else if (role == State.Turn.BLACK)
+            return  -1;
+
+        throw new IllegalArgumentException("The player color should be white or black.");
     }
 }

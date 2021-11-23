@@ -28,7 +28,12 @@ public class TablutSmartClient extends TablutClient {
             player = args[0];
         }
 
-        if (args.length > 1 && args.length < 4) {
+        if (args.length > 1) {
+            if (args.length >= 4){
+                System.out.println("too many arguments.\n");
+                System.out.println(TablutSmartClient.ERROR_MESSAGE);
+                System.exit(-1);
+            }
             try {
                 timeout = Integer.parseInt(args[1]);
             } catch (NumberFormatException e){
@@ -40,12 +45,6 @@ public class TablutSmartClient extends TablutClient {
             if (args.length == 3) {
                 ipAddress = args[2];
             }
-        }
-
-        else {
-            System.out.println("too many arguments.\n");
-            System.out.println(TablutSmartClient.ERROR_MESSAGE);
-            System.exit(-1);
         }
 
         System.out.println("Selected role: " + args[0] + "\n");

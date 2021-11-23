@@ -26,11 +26,11 @@ public class Heuristics {
         BLACK_WEIGHTS.put("black_near_king", 0.1f);
         BLACK_WEIGHTS.put("black_around_king", 0.4f);
         BLACK_WEIGHTS.put("white_captured_proportion", 0.5f);
-        return WHITE_WEIGHTS;
+        return BLACK_WEIGHTS;
     }
 
     public static Float normalizedHeuristicValue(Map<String, Float> heuristics, Map<String, Float> weights) {
-        Float sum = 0.0f;
+        float sum = 0.0f;
         for (String key : heuristics.keySet()) {
             sum += heuristics.get(key) * weights.get(key);
         }
@@ -40,13 +40,13 @@ public class Heuristics {
     public static Float getWhiteHeuristicValue(Pawn[][] board, Pawn[][] previousBoard) {
         Map<String, Float> heuristics = new HashMap<String, Float>();
 
-        Float openPathToVictory = GameHandler.getKingOpenPathToGoal(board); // utilizzare min() [vedi python]
-        Float blackCaptured = 0.0f;
-        if (GameHandler.getPawnDifference(board, previousBoard, -1)) { // ritorna boolean se è diverso il numero
+        Float openPathToVictory = GameHandler.getKingOpenPathsToGoalProportion(board); // utilizzare min() [vedi python]
+        float blackCaptured = 0.0f;
+        if (GameHandler.arePawnsCaptured(board, previousBoard, -1)) { // ritorna boolean se è diverso il numero
             blackCaptured = 1.0f;
         }
 
-        heuristics.put("king_position", GameHandler.isKingInThrone(board)); // TODO ritorna 1 se king è in trono, 0.5 se
+        heuristics.put("king_position", GameHandler.getKingThroneProximityValue(board)); // TODO ritorna 1 se king è in trono, 0.5 se
                                                                             // è vicino e 0 se non vicino
         heuristics.put("open_paths_to_victory", openPathToVictory);
         heuristics.put("black_captured_proportion", blackCaptured);
@@ -57,8 +57,8 @@ public class Heuristics {
     public static Float getBlackHeuristicValue(Pawn[][] board, Pawn[][] previousBoard) {
         Map<String, Float> heuristics = new HashMap<String, Float>();
 
-        Float whiteCaptured = 0.0f;
-        if (GameHandler.getPawnDifference(board, previousBoard, 1)) {
+        float whiteCaptured = 0.0f;
+        if (GameHandler.arePawnsCaptured(board, previousBoard, 1)) {
             whiteCaptured = 1.0f;
         }
 
