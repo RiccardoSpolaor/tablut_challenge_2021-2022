@@ -53,7 +53,7 @@ public class HeuristicsTable {
 
         this.dictionary.put(key, value);
         if (this.dictionary.size() > size) {
-            System.out.println("T size " + dictionary.size());
+            // System.out.println("T size " + dictionary.size());
             this.dictionary.remove(this.dictionary.firstKey());
         }
 
