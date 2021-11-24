@@ -41,6 +41,7 @@ public class Heuristics {
         Map<String, Float> heuristics = new HashMap<String, Float>();
 
         Float openPathToVictory = GameHandler.getKingOpenPathsToGoalProportion(board); // utilizzare min() [vedi python]
+
         float blackCaptured = 0.0f;
         if (GameHandler.arePawnsCaptured(board, previousBoard, -1)) { // ritorna boolean se è diverso il numero
             blackCaptured = 1.0f;
@@ -73,10 +74,10 @@ public class Heuristics {
     }
 
     public static Float getHeuristicValue(Pawn[][] board, Pawn[][] previousBoard, Integer color) {
-        if (color == 10) {
+        if (color == 1) {
             return getWhiteHeuristicValue(board, previousBoard);
         } else {
-            return getBlackHeuristicValue(board, previousBoard);
+            return -getBlackHeuristicValue(board, previousBoard);
         }
     }
 }

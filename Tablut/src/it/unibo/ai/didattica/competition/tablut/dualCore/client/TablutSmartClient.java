@@ -12,8 +12,7 @@ public class TablutSmartClient extends TablutClient {
     private final static String ERROR_MESSAGE = "usage: ./runmyplayer {black,white} [timeout] [ip_address]\n";
     private static int timeout = 30;
 
-    public TablutSmartClient(String player, String name, int timeout, String ipAddress)
-            throws UnknownHostException, IOException {
+    public TablutSmartClient(String player, String name, int timeout, String ipAddress) throws UnknownHostException, IOException {
         super(player, name, timeout, ipAddress);
     }
 
