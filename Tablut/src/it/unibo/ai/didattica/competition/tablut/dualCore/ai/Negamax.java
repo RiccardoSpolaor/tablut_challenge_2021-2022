@@ -14,16 +14,16 @@ public final class Negamax {
 
     private final int color;
     private final int timeout;
-    private final Map<Integer, Float> heuristicsTable;
-    private final Map<Integer, TableEntry> traspositionTable;
+    private final HeuristicsTable heuristicsTable;
+    private final TraspositionTable traspositionTable;
     private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private final ConcurrentCounter counter = new ConcurrentCounter();
 
     public Negamax(int color, int timeout) {
         this.color = color;
         this.timeout = timeout - 1;
-        traspositionTable = Collections.synchronizedMap(new LinkedHashMap<>(TABLE_SIZE));
-        heuristicsTable = Collections.synchronizedMap(new LinkedHashMap<>(TABLE_SIZE));
+        traspositionTable = new TraspositionTable(TABLE_SIZE);
+        heuristicsTable = new HeuristicsTable(TABLE_SIZE);
     }
 
     private static class ConcurrentCounter {
@@ -153,11 +153,10 @@ public final class Negamax {
 
         for (Action action : availableActions) {
             Node n = new Node(GameHandler.applyOperation(root.getState(), action), root.getState(), action);
-            Float heuristic = heuristicsTable.get(n.getId());
+            Float heuristic = heuristicsTable.getItem(n.getId());
             if (heuristic == null) {
-                heuristic = Heuristics.getHeuristicValue(n.getState().getBoard(), n.getParentState().getBoard(),
-                        current_color);
-                heuristicsTable.put(n.getId(), heuristic);
+                heuristic = Heuristics.getHeuristicValue(n.getState().getBoard(), n.getParentState().getBoard(), current_color);
+                heuristicsTable.setItem(n.getId(), heuristic);
             }
             n.setHeuristicValue(heuristic);
             childNodes.add(n);
@@ -186,7 +185,7 @@ public final class Negamax {
         // System.out.println("eseguo Negamax con depth: " + depth);
         Float alphaOrig = alpha;
 
-        TableEntry tableEntry = traspositionTable.get(node.getId());
+        TableEntry tableEntry = traspositionTable.getItem(node.getId());
 
         if (tableEntry != null && tableEntry.depth >= depth) {
             if (tableEntry.flag.equals(TableEntry.FlagValue.EXACT)) {
@@ -255,7 +254,7 @@ public final class Negamax {
 
         tableEntry = new TableEntry(bestValue, tableEntryFlag, depth);
 
-        traspositionTable.put(node.getId(), tableEntry);
+        traspositionTable.setItem(node.getId(), tableEntry);
 
         // System.out.println("finito Negamax");
         return bestValue;

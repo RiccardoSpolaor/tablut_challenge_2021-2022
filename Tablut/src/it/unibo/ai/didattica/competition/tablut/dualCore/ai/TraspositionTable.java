@@ -7,24 +7,55 @@ public class TraspositionTable {
     SortedMap<Integer,TableEntry> dictionary; // initializzare
     Integer size;
 
+    boolean isAdding = false, isGetting = false;
+
     public TraspositionTable(Integer size) {
         this.dictionary = new TreeMap<Integer,TableEntry>();
         this.size = size;
     }
     
-    public TableEntry getItem(Integer key) {
+    public synchronized TableEntry getItem(Integer key) {
+        while (isAdding || isGetting) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        isGetting = true;
+        TableEntry val;
         try {
-            return this.dictionary.get(key);
+            val = this.dictionary.get(key);
+            isGetting = false;
+            notifyAll();
+            return val;
         } catch (Exception e) {
-            return null;
+            val = null;
+            isGetting = false;
+            notifyAll();
+            return val;
         }
     }
 
-    public void setItem(Integer key, TableEntry value) {
+    public synchronized void setItem(Integer key, TableEntry value) {
+        while (isAdding || isGetting) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        isAdding = true;
+
         this.dictionary.put(key, value);
         if (this.dictionary.size() > size){
             this.dictionary.remove(this.dictionary.firstKey());
         }
+
+        isAdding = false;
+        notifyAll();
     }
 
 }

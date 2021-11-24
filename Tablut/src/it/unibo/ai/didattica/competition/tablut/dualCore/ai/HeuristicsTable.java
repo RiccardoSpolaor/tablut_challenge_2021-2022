@@ -8,24 +8,57 @@ public class HeuristicsTable {
     SortedMap<Integer, Float> dictionary; // initializzare
     Integer size;
 
+    boolean isAdding = false, isGetting = false;
+
     public HeuristicsTable(Integer size) {
         this.dictionary = new TreeMap<Integer, Float>();
         this.size = size;
     }
 
-    public Float getItem(Integer key) {
+    public synchronized Float getItem(Integer key) {
+        while (isAdding || isGetting) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        isGetting = true;
+        Float val;
+
         try {
-            return this.dictionary.get(key);
+            val = this.dictionary.get(key);
+            isGetting = false;
+            notifyAll();
+            return val;
         } catch (Exception e) {
-            return null;
+            val = null;
+            isGetting = false;
+            notifyAll();
+            return val;
         }
     }
 
-    public void setItem(Integer key, Float value) {
+    public synchronized void setItem(Integer key, Float value) {
+        while (isAdding || isGetting) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        isAdding = true;
+
         this.dictionary.put(key, value);
         if (this.dictionary.size() > size) {
+            System.out.println("T size " + dictionary.size());
             this.dictionary.remove(this.dictionary.firstKey());
         }
+
+        isAdding = false;
+        notifyAll();
     }
 
 }
