@@ -78,7 +78,16 @@
             "name": "Launch Tester",
             "request": "launch",
             "mainClass": "it.unibo.ai.didattica.competition.tablut.tester.Tester",
-            "projectName": "Tablut2019"
+            "projectName": "Tablut2019",
+            "args": ["4"]
+        },
+        {
+            "type": "java",
+            "name": "Launch DualCore",
+            "request": "launch",
+            "mainClass": "it.unibo.ai.didattica.competition.tablut.dualCore.DualCoreTablut",
+            "projectName": "Tablut2019",
+            "args": ["WHITE", "60"]
         }
     ]
 }

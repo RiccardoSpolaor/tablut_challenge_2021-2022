@@ -58,4 +58,8 @@ public class TraspositionTable {
         notifyAll();
     }
 
+    public void clear() {
+        this.dictionary.clear();
+    }
+
 }

@@ -25,10 +25,10 @@ public class GameHandler {
     private final static int[][] ESCAPES = { { 0, 1 }, { 0, 2 }, { 0, 6 }, { 0, 7 }, { 1, 0 }, { 1, 8 }, { 2, 0 },
             { 2, 8 }, { 6, 0 }, { 6, 8 }, { 7, 0 }, { 7, 8 }, { 8, 1 }, { 8, 2 }, { 8, 6 }, { 8, 7 } };
 
-    /*
-     * private final static int[][] ESCAPE_BLOCKS = { {1, 2}, {1, 6}, {2, 1}, {2,
-     * 2}, {2, 6}, {2, 7}, {7, 2}, {7, 6}, {6, 1}, {6, 2}, {6, 6}, {6, 7} };
-     */
+    
+    private final static int[][] ESCAPE_BLOCKS = { {1, 2}, {1, 6}, {2, 1}, {2,
+    2}, {2, 6}, {2, 7}, {7, 2}, {7, 6}, {6, 1}, {6, 2}, {6, 6}, {6, 7} };
+     
 
     private final static int[] THRONE = { 4, 4 };
 
@@ -419,4 +419,17 @@ public class GameHandler {
         return newState;
     }
 
+    public static Float countEscapeDifference(Pawn[][] board, Pawn[][] previousBoard) {
+        int previous = 0;
+        int current = 0;
+        for (int[] cell : ESCAPE_BLOCKS){
+            if (previousBoard[cell[0]][cell[1]].equals(Pawn.BLACK)){
+                previous ++;
+            }
+            if (board[cell[0]][cell[1]].equals(Pawn.BLACK)){
+                current ++;
+            }
+        }
+        return (current - previous) * 1f;
+    }
 }

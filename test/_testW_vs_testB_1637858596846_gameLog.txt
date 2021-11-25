@@ -1,0 +1,42 @@
+nov 25, 2021 5:43:16 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Players:	testW	vs	testB
+nov 25, 2021 5:43:16 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Repeated moves allowed:	0	Cache:	-1
+nov 25, 2021 5:43:16 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Inizio partita
+nov 25, 2021 5:43:16 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Stato:
+OOOBBBOOO
+OOOOBOOOO
+OOOOWOOOO
+BOOOWOOOB
+BBWWKWWBB
+BOOOWOOOB
+OOOOWOOOO
+OOOOBOOOO
+OOOBBBOOO
+-
+B
+nov 25, 2021 5:45:31 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from A1 to A2
+nov 25, 2021 5:45:31 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Giocatore B cerca di muovere una pedina avversaria
+nov 25, 2021 5:45:40 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from C1 to C2
+nov 25, 2021 5:45:40 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut movePawn
+FINE: Movimento pedina
+nov 25, 2021 5:45:40 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Current draw cache size: 1
+nov 25, 2021 5:45:40 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Stato:
+OOOOOBOOO
+OOBOOOOOO
+OOOOOOOOO
+OOOOOOOOO
+OOOOTOOOO
+OOKWOOOOO
+OOBOOOOOO
+OOOOOOOOO
+OOOOOOOOO
+-
+W

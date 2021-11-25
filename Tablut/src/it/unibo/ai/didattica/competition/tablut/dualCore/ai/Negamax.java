@@ -16,7 +16,7 @@ public final class Negamax {
     private final int timeout;
     private final HeuristicsTable heuristicsTable;
     private final TraspositionTable traspositionTable;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
     private final ConcurrentCounter counter = new ConcurrentCounter();
 
     public Negamax(int color, int timeout) {
@@ -86,6 +86,7 @@ public final class Negamax {
     }
 
     public Action findBestMove(State state) {
+        traspositionTable.clear();
         counter.reset();
         Node root = new Node(state, state, null);
 
@@ -113,21 +114,25 @@ public final class Negamax {
         float bestValue = Float.NEGATIVE_INFINITY;
 
         NegamaxResult bestResult = null;
-
+        List<NegamaxResult> results = new ArrayList<NegamaxResult>();
         for (int i = 0; i < childNodes.size(); i++) {
             try {
                 if (((System.currentTimeMillis() - started) / 1000) >= timeout) {
                     break;
                 }
                 NegamaxResult actualResult = futureResults.get(i).get(timeout - (System.currentTimeMillis() - started) / 1000, TimeUnit.SECONDS );
+                results.add(actualResult);
                 float actualValue = actualResult.getValue();
                 if (actualValue > bestValue) {
                     bestResult = actualResult;
                     bestValue = actualValue;
+                    
                 }
             } catch (Exception ignored) {}
         }
-
+        for (NegamaxResult res : results){
+            System.out.println(res.getAction() + ": " + res.getValue());
+        }
         // executorService.shutdown();
 
         if (bestResult == null) {
@@ -135,6 +140,7 @@ public final class Negamax {
             return availableActions.get(random.nextInt(availableActions.size()));
         }
         System.out.println("Analyzed nodes: " + counter.getCount());
+        
         return bestResult.getAction();
     }
 
@@ -221,8 +227,16 @@ public final class Negamax {
 
         ArrayList<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(),
                 node.getState());
-        ArrayList<Node> childNodes = getSortedChildNodes(node, availableActions, current_color);
-
+        ArrayList<Node> childNodesFull = getSortedChildNodes(node, availableActions, current_color);
+        ArrayList<Node> childNodes = childNodesFull;
+        
+        /*
+        Integer size = childNodesFull.size() / 2;
+        for (int i = 0; i < size; i++){
+            childNodes.add(childNodesFull.get(i));
+        }
+        */
+        
         float bestValue = Float.NEGATIVE_INFINITY;
         // System.out.println("ho trovato " + childNodes.size() + " figli");
         for (Node child : childNodes) {
