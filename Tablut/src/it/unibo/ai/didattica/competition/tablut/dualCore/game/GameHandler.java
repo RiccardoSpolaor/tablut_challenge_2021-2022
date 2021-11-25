@@ -97,11 +97,13 @@ public class GameHandler {
     }
 
     public static Float getKingThroneProximityValue(Pawn[][] board) {
-        if (board[4][4] == Pawn.KING)
+        if (board[4][4].equals(Pawn.KING)) {
             return 1f;
-        if (board[3][4] == Pawn.KING || board[5][4] == Pawn.KING || board[4][3] == Pawn.KING
-                || board[4][5] == Pawn.KING)
+        }
+        if (board[3][4].equals(Pawn.KING) || board[5][4].equals(Pawn.KING) || board[4][3].equals(Pawn.KING)
+                || board[4][5].equals(Pawn.KING)) {
             return .5f;
+        }
         return 0f;
     }
 
@@ -116,37 +118,37 @@ public class GameHandler {
         int pawnsNearKingNumber = 0;
 
         for (int c = kingCol + 1; c < board.length; c++) {
-            if (board[kingRow][c] == Pawn.BLACK) {
+            if (board[kingRow][c].equals(Pawn.BLACK)) {
                 pawnsNearKingNumber += 1;
                 break;
-            } else if (board[kingRow][c] == Pawn.EMPTY) {
+            } else if (board[kingRow][c].equals(Pawn.EMPTY)) {
                 break;
             }
         }
 
         for (int c = kingCol - 1; c >= 0; c--) {
-            if (board[kingRow][c] == Pawn.BLACK) {
+            if (board[kingRow][c].equals(Pawn.BLACK)) {
                 pawnsNearKingNumber += 1;
                 break;
-            } else if (board[kingRow][c] == Pawn.EMPTY) {
+            } else if (board[kingRow][c].equals(Pawn.EMPTY)) {
                 break;
             }
         }
 
         for (int r = kingRow + 1; r < board.length; r++) {
-            if (board[r][kingCol] == Pawn.BLACK) {
+            if (board[r][kingCol].equals(Pawn.BLACK)) {
                 pawnsNearKingNumber += 1;
                 break;
-            } else if (board[r][kingCol] == Pawn.EMPTY) {
+            } else if (board[r][kingCol].equals(Pawn.EMPTY)) {
                 break;
             }
         }
 
         for (int r = kingRow - 1; r >= 0; r--) {
-            if (board[r][kingCol] == Pawn.BLACK) {
+            if (board[r][kingCol].equals(Pawn.BLACK)) {
                 pawnsNearKingNumber += 1;
                 break;
-            } else if (board[r][kingCol] == Pawn.EMPTY) {
+            } else if (board[r][kingCol].equals(Pawn.EMPTY)) {
                 break;
             }
         }
@@ -163,13 +165,13 @@ public class GameHandler {
 
         int number = 0;
 
-        if (kingRow - 1 >= 0 && board[kingRow - 1][kingCol] == Pawn.BLACK)
+        if (kingRow - 1 >= 0 && board[kingRow - 1][kingCol].equals(Pawn.BLACK))
             number++;
-        if (kingRow + 1 < board.length && board[kingRow + 1][kingCol] == Pawn.BLACK)
+        if (kingRow + 1 < board.length && board[kingRow + 1][kingCol].equals(Pawn.BLACK))
             number++;
-        if (kingCol - 1 >= 0 && board[kingRow][kingCol - 1] == Pawn.BLACK)
+        if (kingCol - 1 >= 0 && board[kingRow][kingCol - 1].equals(Pawn.BLACK))
             number++;
-        if (kingCol + 1 < board.length && board[kingRow][kingCol + 1] == Pawn.BLACK)
+        if (kingCol + 1 < board.length && board[kingRow][kingCol + 1].equals(Pawn.BLACK))
             number++;
 
         float king_pos_value = getKingThroneProximityValue(board);
@@ -181,7 +183,7 @@ public class GameHandler {
     private static int[] findKingPosition(Pawn[][] board) {
         for (int row = 0; row < board.length; row++) {
             for (int column = 0; column < board.length; column++) {
-                if (board[row][column] == Pawn.KING) {
+                if (board[row][column].equals(Pawn.KING)) {
                     return new int[] { row, column };
                 }
             }
@@ -191,7 +193,7 @@ public class GameHandler {
 
     public static Integer checkVictory(Pawn[][] board) {
         for (int[] cell : ESCAPES) {
-            if (board[cell[0]][cell[1]] == Pawn.KING) {
+            if (board[cell[0]][cell[1]].equals(Pawn.KING)) {
                 return 1;
             }
         }
@@ -202,7 +204,7 @@ public class GameHandler {
             if (found)
                 break;
             for (int column = 0; column < board.length; column++) {
-                if (pawns[column] == Pawn.BLACK) {
+                if (pawns[column].equals(Pawn.BLACK)) {
                     found = true;
                     break;
                 }
@@ -221,7 +223,7 @@ public class GameHandler {
 
     private static boolean canPlayerMoveInCell(Pawn[][] board, State.Turn turn, int start_row, int start_column,
             int end_row, int end_column) {
-        if (turn == State.Turn.WHITE)
+        if (turn.equals(State.Turn.WHITE))
             return canWhiteMoveInCell(board, end_row, end_column);
         else
             return canBlackMoveInCell(board, start_row, start_column, end_row, end_column);
@@ -230,24 +232,23 @@ public class GameHandler {
     private static boolean isPawnInBoardPositions(int row, int column, int[][] positionsToCheck) {
         for (int[] c : positionsToCheck) {
             if (c[0] == row && c[1] == column)
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
 
     private static boolean canWhiteMoveInCell(Pawn[][] board, int row, int column) {
-        if (board[row][column] == Pawn.EMPTY) {
-            return isPawnInBoardPositions(row, column, CAMPS);
+        if (board[row][column].equals(Pawn.EMPTY)) {
+            return !isPawnInBoardPositions(row, column, CAMPS);
         } else
             return false;
     }
 
     private static boolean canBlackMoveInCell(Pawn[][] board, int start_row, int start_column, int end_row,
             int end_column) {
-        if (board[end_row][end_column] == Pawn.EMPTY) {
-            boolean isEndPositionInCamps = isPawnInBoardPositions(start_row, start_column, CAMPS);
-            if (isEndPositionInCamps) {
-                return isPawnInBoardPositions(end_row, end_column, CAMPS);
+        if (board[end_row][end_column].equals(Pawn.EMPTY)) {
+            if (isPawnInBoardPositions(end_row, end_column, CAMPS)) {
+                return isPawnInBoardPositions(start_row, start_column, CAMPS);
             } else
                 return true;
         } else
@@ -267,7 +268,7 @@ public class GameHandler {
         ArrayList<Action> actionsList = new ArrayList<>();
 
         ArrayList<Pawn> usableCellValues = new ArrayList<>();
-        if (state.getTurn() == State.Turn.WHITE) {
+        if (state.getTurn().equals(State.Turn.WHITE)) {
             usableCellValues.add(Pawn.WHITE);
             usableCellValues.add(Pawn.KING);
         } else
@@ -322,7 +323,7 @@ public class GameHandler {
         State.Turn turn = state.getTurn();
         ArrayList<Pawn> playerValues = new ArrayList<>();
         ArrayList<Pawn> enemyValues = new ArrayList<>();
-        if (turn == State.Turn.WHITE) {
+        if (turn.equals(State.Turn.WHITE)) {
             playerValues.add(Pawn.KING);
             playerValues.add(Pawn.WHITE);
             enemyValues.add(Pawn.BLACK);
@@ -347,23 +348,27 @@ public class GameHandler {
         int topRow = enemyRow - 1;
         int bottomRow = enemyRow + 1;
 
-        boolean leftCapture = leftCol >= 0 && (board[enemyRow][leftCol] == Pawn.THRONE
+        boolean leftCapture = leftCol >= 0 && ((enemyRow == THRONE[0] && leftCol == THRONE[1])
                 || (isPawnInBoardPositions(enemyRow, leftCol, CAMPS) && !isEnemyInCamp)
                 || playerValues.contains(board[enemyRow][leftCol]));
 
-        boolean rightCapture = rightCol < board.length && (board[enemyRow][rightCol] == Pawn.THRONE
+        boolean rightCapture = rightCol < board.length && ((enemyRow == THRONE[0] && rightCol == THRONE[1])
                 || (isPawnInBoardPositions(enemyRow, rightCol, CAMPS) && !isEnemyInCamp)
                 || playerValues.contains(board[enemyRow][rightCol]));
 
-        boolean topCapture = topRow >= 0 && (board[topRow][enemyColumn] == Pawn.THRONE
+        boolean topCapture = topRow >= 0 && ((topRow == THRONE[0] && enemyColumn == THRONE[1])
                 || (isPawnInBoardPositions(topRow, enemyColumn, CAMPS) && !isEnemyInCamp)
                 || playerValues.contains(board[topRow][enemyColumn]));
 
-        boolean bottomCapture = bottomRow < board.length && (board[bottomRow][enemyColumn] == Pawn.THRONE
+        boolean bottomCapture = bottomRow < board.length && ((bottomRow == THRONE[0] && enemyColumn == THRONE[1])
                 || (isPawnInBoardPositions(bottomRow, enemyColumn, CAMPS) && !isEnemyInCamp)
                 || playerValues.contains(board[bottomRow][enemyColumn]));
 
-        if (enemy == Pawn.KING) {
+        /*if (turn == State.Turn.WHITE && (rightCapture && leftCapture) || (topCapture && bottomCapture)) {
+            System.out.println(board);
+        }*/
+
+        if (enemy.equals(Pawn.KING)) {
             if (getKingThroneProximityValue(board) != 0)
                 return topCapture && bottomCapture && leftCapture && rightCapture;
         }
@@ -406,7 +411,7 @@ public class GameHandler {
 
         newState.setBoard(board);
 
-        if (newState.getTurn() == State.Turn.WHITE)
+        if (newState.getTurn().equals(State.Turn.WHITE))
             newState.setTurn(State.Turn.BLACK);
         else
             newState.setTurn(State.Turn.WHITE);
