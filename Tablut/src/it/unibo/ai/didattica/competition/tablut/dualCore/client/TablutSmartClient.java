@@ -80,6 +80,7 @@ public class TablutSmartClient extends TablutClient {
             State.Turn turn = state.getTurn();
 
             if (turn.equals(this.getPlayer())) {
+                System.out.println("My turn starting...\n");
                 Action action = player.chooseMove(state);
                 System.out.println("Selected move: " + action + "\n");
                 try {

@@ -16,7 +16,7 @@ public final class Negamax {
     private final int timeout;
     private final HeuristicsTable heuristicsTable;
     private final TraspositionTable traspositionTable;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private final ConcurrentCounter counter = new ConcurrentCounter();
 
     public Negamax(int color, int timeout) {
@@ -103,7 +103,6 @@ public final class Negamax {
         System.out.println("\n");
 
         ArrayList<Future<NegamaxResult>> futureResults = new ArrayList<>(childNodes.size());
-        // ArrayList<NegamaxResult> results = new ArrayList<>();
 
         long started = System.currentTimeMillis();
 
@@ -148,7 +147,6 @@ public final class Negamax {
             Thread.currentThread().interrupt();
             return new NegamaxResult(node.getParentOperation(), Float.NEGATIVE_INFINITY);
         }
-        // System.out.println("parallel negamax");
         return new NegamaxResult(node.getParentOperation(),
                 -this.negamax(node, started, -color, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, DEPTH));
     }
@@ -167,7 +165,6 @@ public final class Negamax {
             childNodes.add(n);
         }
 
-        // ToDo check if the sorting is correct;
         childNodes.sort((o1, o2) -> {
             if (Objects.equals(o1.getHeuristicValue(), o2.getHeuristicValue()))
                 return 0;
@@ -187,14 +184,12 @@ public final class Negamax {
             Thread.currentThread().interrupt();
             return Float.NEGATIVE_INFINITY * this.color * current_color;
         }
-        // System.out.println("eseguo Negamax con depth: " + depth);
         Float alphaOrig = alpha;
 
         TableEntry tableEntry = traspositionTable.getItem(node.getId());
 
         if (tableEntry != null && tableEntry.depth >= depth) {
             if (tableEntry.flag.equals(TableEntry.FlagValue.EXACT)) {
-                // System.out.println("ritorno table");
                 return tableEntry.value;
             } else if (tableEntry.flag.equals(TableEntry.FlagValue.LOWER_BOUND))
                 alpha = Math.max(alpha, tableEntry.value);
@@ -208,14 +203,12 @@ public final class Negamax {
 
         /* Draw */
         if (GameHandler.getPreviousStates().contains(node.getId())) {
-            // System.out.println("ritorno per pareggio");
             return 0f;
         }
 
         int victory = node.isTerminal();
 
         if (Math.abs(victory) == 1) {
-            // System.out.println("ritorno per vittoria");
             return current_color * victory * Math.max(depth, 1f);
         }
 
@@ -230,20 +223,10 @@ public final class Negamax {
         ArrayList<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(),
                 node.getState());
         ArrayList<Node> childNodes = getSortedChildNodes(node, availableActions, current_color);
-
-        /*
-        Integer size = childNodesFull.size() / 2;
-        for (int i = 0; i < size; i++){
-            childNodes.add(childNodesFull.get(i));
-        }
-        */
         
         float bestValue = Float.NEGATIVE_INFINITY;
-        // System.out.println("ho trovato " + childNodes.size() + " figli");
+
         for (Node child : childNodes) {
-            // System.out.println("child ID: " + child.getId() + ", iterazione: " + i++);
-            // System.out.println("trascorsi: " + ((System.currentTimeMillis() - started) /
-            // 1000));
             if (((System.currentTimeMillis() - started) / 1000) >= timeout) {
                 if (bestValue == Float.NEGATIVE_INFINITY)
                     return Float.NEGATIVE_INFINITY * this.color * current_color;
@@ -254,7 +237,6 @@ public final class Negamax {
             bestValue = Math.max(bestValue, val);
             alpha = Math.max(alpha, bestValue);
             if (alpha >= beta) {
-                // System.out.println("scartato figlio");
                 break;
             }
         }
@@ -272,7 +254,6 @@ public final class Negamax {
 
         traspositionTable.setItem(node.getId(), tableEntry);
 
-        // System.out.println("finito Negamax");
         return bestValue;
     }
 }

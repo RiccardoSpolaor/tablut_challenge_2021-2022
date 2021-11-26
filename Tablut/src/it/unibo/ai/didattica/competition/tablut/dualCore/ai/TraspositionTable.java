@@ -4,7 +4,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class TraspositionTable {
-    SortedMap<Integer,TableEntry> dictionary; // initializzare
+    SortedMap<Integer,TableEntry> dictionary;
     Integer size;
 
     boolean isAdding = false, isGetting = false;

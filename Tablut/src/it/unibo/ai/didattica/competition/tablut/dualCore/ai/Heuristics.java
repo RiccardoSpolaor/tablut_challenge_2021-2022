@@ -7,9 +7,6 @@ import it.unibo.ai.didattica.competition.tablut.dualCore.game.GameHandler;
 
 public class Heuristics {
 
-    public static Integer BLACK_TOTAL = 16;
-    public static Integer WHITE_TOTAL = 9;
-
     public static Map<String, Float> WHITE_WEIGHTS = Heuristics.initializeWhite();
     public static Map<String, Float> BLACK_WEIGHTS = Heuristics.initializeBlack();
 
@@ -18,18 +15,13 @@ public class Heuristics {
         WHITE_WEIGHTS.put("king_position", 0.2f);
         WHITE_WEIGHTS.put("open_paths_to_victory", 0.3f);
         WHITE_WEIGHTS.put("black_captured_proportion", 0.5f);
-
-        // WHITE_WEIGHTS.put("black_around_king", -0.3f);
-        //WHITE_WEIGHTS.put("black_near_king", -0.05f);
         return WHITE_WEIGHTS;
     }
 
     private static Map<String, Float> initializeBlack() {
         Map<String, Float> BLACK_WEIGHTS = new HashMap<String, Float>();
         BLACK_WEIGHTS.put("black_near_king", 0.14f);
-        // BLACK_WEIGHTS.put("black_around_king", 0.3f);
         BLACK_WEIGHTS.put("white_captured_proportion", 0.8f);
-        // BLACK_WEIGHTS.put("block_escapes", 0.1f);
         BLACK_WEIGHTS.put("block_paths_to_victory", 0.06f);
         return BLACK_WEIGHTS;
     }
@@ -45,24 +37,16 @@ public class Heuristics {
     public static Float getWhiteHeuristicValue(Pawn[][] board, Pawn[][] previousBoard) {
         Map<String, Float> heuristics = new HashMap<String, Float>();
 
-        Float openPathToVictory = GameHandler.getKingOpenPathsToGoalProportion(board); // utilizzare min() [vedi python]
+        Float openPathToVictory = GameHandler.getKingOpenPathsToGoalProportion(board);
 
         float blackCaptured = 0.0f;
-        if (GameHandler.arePawnsCaptured(board, previousBoard, -1)) { // ritorna boolean se è diverso il numero
+        if (GameHandler.arePawnsCaptured(board, previousBoard, -1)) {
             blackCaptured = 1.0f;
         }
 
-        heuristics.put("king_position", GameHandler.getKingThroneProximityValue(board)); // TODO ritorna 1 se king è in trono, 0.5 se
-                                                                            // è vicino e 0 se non vicino
+        heuristics.put("king_position", GameHandler.getKingThroneProximityValue(board));
         heuristics.put("open_paths_to_victory", openPathToVictory);
         heuristics.put("black_captured_proportion", blackCaptured);
-
-        // black heuristics
-
-        // Float blackAroundKing = GameHandler.blackAroundKing(board);
-        //Float blackNearKing = GameHandler.blackNearKing(board);
-        // heuristics.put("black_around_king", blackAroundKing);
-        //heuristics.put("black_near_king", blackNearKing);
 
         return normalizedHeuristicValue(heuristics, WHITE_WEIGHTS);
     }
@@ -75,13 +59,9 @@ public class Heuristics {
             whiteCaptured = 1.0f;
         }
         Float blockedPathToVictory = (GameHandler.getKingOpenPathsToGoalProportion(board) == 0) ? 1f : 0f;
-        // Float blackAroundKing = GameHandler.blackAroundKing(board);
         Float blackNearKing = GameHandler.blackNearKing(board);
-        // Float escapedBlocked = GameHandler.countEscapeDifference(board, previousBoard);
-        // heuristics.put("black_around_king", blackAroundKing);
         heuristics.put("black_near_king", blackNearKing);
         heuristics.put("white_captured_proportion", whiteCaptured);
-        // heuristics.put("block_escapes", escapedBlocked);
         heuristics.put("block_paths_to_victory", blockedPathToVictory);
 
         return normalizedHeuristicValue(heuristics, BLACK_WEIGHTS);

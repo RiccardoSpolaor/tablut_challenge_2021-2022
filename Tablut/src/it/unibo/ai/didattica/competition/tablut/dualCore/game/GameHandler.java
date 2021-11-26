@@ -263,7 +263,6 @@ public class GameHandler {
         }
     }
 
-    //
     public static ArrayList<Action> getAvailableActions(Pawn[][] board, State state) {
         ArrayList<Action> actionsList = new ArrayList<>();
 
@@ -373,9 +372,7 @@ public class GameHandler {
         return (topCapture && bottomCapture) || (leftCapture && rightCapture);
     }
 
-    // ToDo: check victory aggiungere qui?
     public static State applyOperation(State oldState, Action parentOperation) {
-        // state = start_state.copy()
 
         State newState = oldState.clone();
         Pawn[][] board = newState.getBoard();
