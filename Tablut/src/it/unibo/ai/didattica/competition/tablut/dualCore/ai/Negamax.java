@@ -96,12 +96,6 @@ public final class Negamax {
                 root.getState());
         ArrayList<Node> childNodes = getSortedChildNodes(root, availableActions, color);
 
-        for (Node n : childNodes) {
-            System.out.print(n.getHeuristicValue() + ", ");
-        }
-
-        System.out.println("\n");
-
         ArrayList<Future<NegamaxResult>> futureResults = new ArrayList<>(childNodes.size());
 
         long started = System.currentTimeMillis();
@@ -129,11 +123,7 @@ public final class Negamax {
                 }
             } catch (Exception ignored) {}
         }
-        for (NegamaxResult res : results){
-            System.out.println(res.getAction() + ": " + res.getValue());
-        }
-        
-        System.out.println("Analyzed nodes: " + counter.getCount());
+
         if (bestResult == null) {
             Random random = new Random();
             return availableActions.get(random.nextInt(availableActions.size()));
@@ -214,10 +204,7 @@ public final class Negamax {
 
         if (depth == 0) {
             counter.increase();
-            
-            Float res = current_color * node.getHeuristicValue();
-            System.out.println("ritorno valore: " + res);
-            return res;
+            return current_color * node.getHeuristicValue();
         }
 
         ArrayList<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(),
