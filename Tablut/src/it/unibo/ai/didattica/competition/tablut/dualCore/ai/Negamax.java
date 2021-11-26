@@ -133,14 +133,13 @@ public final class Negamax {
         for (NegamaxResult res : results){
             System.out.println(res.getAction() + ": " + res.getValue());
         }
-        // executorService.shutdown();
-
+        
+        System.out.println("Analyzed nodes: " + counter.getCount());
         if (bestResult == null) {
             Random random = new Random();
             return availableActions.get(random.nextInt(availableActions.size()));
         }
-        System.out.println("Analyzed nodes: " + counter.getCount());
-        
+        // executorService.shutdownNow();
         return bestResult.getAction();
     }
 
@@ -183,7 +182,7 @@ public final class Negamax {
     }
 
     private Float negamax(Node node, Long started, int current_color, Float alpha, Float beta, int depth) {
-        counter.increase();
+        
         if (Thread.interrupted()) {
             Thread.currentThread().interrupt();
             return Float.NEGATIVE_INFINITY * this.color * current_color;
@@ -221,15 +220,17 @@ public final class Negamax {
         }
 
         if (depth == 0) {
-            // System.out.println("ritorno per fine ricerca");
-            return current_color * node.getHeuristicValue();
+            counter.increase();
+            
+            Float res = current_color * node.getHeuristicValue();
+            System.out.println("ritorno valore: " + res);
+            return res;
         }
 
         ArrayList<Action> availableActions = GameHandler.getAvailableActions(node.getState().getBoard(),
                 node.getState());
-        ArrayList<Node> childNodesFull = getSortedChildNodes(node, availableActions, current_color);
-        ArrayList<Node> childNodes = childNodesFull;
-        
+        ArrayList<Node> childNodes = getSortedChildNodes(node, availableActions, current_color);
+
         /*
         Integer size = childNodesFull.size() / 2;
         for (int i = 0; i < size; i++){
@@ -249,6 +250,7 @@ public final class Negamax {
                 break;
             }
             float val = -negamax(child, started, -current_color, -beta, -alpha, depth - 1);
+            
             bestValue = Math.max(bestValue, val);
             alpha = Math.max(alpha, bestValue);
             if (alpha >= beta) {

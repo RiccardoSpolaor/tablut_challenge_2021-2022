@@ -364,10 +364,7 @@ public class GameHandler {
                 || (isPawnInBoardPositions(bottomRow, enemyColumn, CAMPS) && !isEnemyInCamp)
                 || playerValues.contains(board[bottomRow][enemyColumn]));
 
-        /*if (turn == State.Turn.WHITE && (rightCapture && leftCapture) || (topCapture && bottomCapture)) {
-            System.out.println(board);
-        }*/
-
+    
         if (enemy.equals(Pawn.KING)) {
             if (getKingThroneProximityValue(board) != 0)
                 return topCapture && bottomCapture && leftCapture && rightCapture;

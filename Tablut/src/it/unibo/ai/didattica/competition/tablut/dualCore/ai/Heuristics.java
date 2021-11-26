@@ -15,21 +15,22 @@ public class Heuristics {
 
     private static Map<String, Float> initializeWhite() {
         Map<String, Float> WHITE_WEIGHTS = new HashMap<String, Float>();
-        WHITE_WEIGHTS.put("king_position", 0.1f);
-        WHITE_WEIGHTS.put("open_paths_to_victory", 0.2f);
-        WHITE_WEIGHTS.put("black_captured_proportion", 0.7f);
+        WHITE_WEIGHTS.put("king_position", 0.2f);
+        WHITE_WEIGHTS.put("open_paths_to_victory", 0.3f);
+        WHITE_WEIGHTS.put("black_captured_proportion", 0.5f);
 
         // WHITE_WEIGHTS.put("black_around_king", -0.3f);
-        WHITE_WEIGHTS.put("black_near_king", -0.05f);
+        //WHITE_WEIGHTS.put("black_near_king", -0.05f);
         return WHITE_WEIGHTS;
     }
 
     private static Map<String, Float> initializeBlack() {
         Map<String, Float> BLACK_WEIGHTS = new HashMap<String, Float>();
-        BLACK_WEIGHTS.put("black_near_king", 0.1f);
+        BLACK_WEIGHTS.put("black_near_king", 0.14f);
         // BLACK_WEIGHTS.put("black_around_king", 0.3f);
         BLACK_WEIGHTS.put("white_captured_proportion", 0.8f);
-        BLACK_WEIGHTS.put("block_escapes", 0.1f);
+        // BLACK_WEIGHTS.put("block_escapes", 0.1f);
+        BLACK_WEIGHTS.put("block_paths_to_victory", 0.06f);
         return BLACK_WEIGHTS;
     }
 
@@ -59,9 +60,9 @@ public class Heuristics {
         // black heuristics
 
         // Float blackAroundKing = GameHandler.blackAroundKing(board);
-        Float blackNearKing = GameHandler.blackNearKing(board);
+        //Float blackNearKing = GameHandler.blackNearKing(board);
         // heuristics.put("black_around_king", blackAroundKing);
-        heuristics.put("black_near_king", blackNearKing);
+        //heuristics.put("black_near_king", blackNearKing);
 
         return normalizedHeuristicValue(heuristics, WHITE_WEIGHTS);
     }
@@ -73,14 +74,15 @@ public class Heuristics {
         if (GameHandler.arePawnsCaptured(board, previousBoard, 1)) {
             whiteCaptured = 1.0f;
         }
-
+        Float blockedPathToVictory = (GameHandler.getKingOpenPathsToGoalProportion(board) == 0) ? 1f : 0f;
         // Float blackAroundKing = GameHandler.blackAroundKing(board);
         Float blackNearKing = GameHandler.blackNearKing(board);
-        Float escapedBlocked = GameHandler.countEscapeDifference(board, previousBoard);
+        // Float escapedBlocked = GameHandler.countEscapeDifference(board, previousBoard);
         // heuristics.put("black_around_king", blackAroundKing);
         heuristics.put("black_near_king", blackNearKing);
         heuristics.put("white_captured_proportion", whiteCaptured);
-        heuristics.put("block_escapes", escapedBlocked);
+        // heuristics.put("block_escapes", escapedBlocked);
+        heuristics.put("block_paths_to_victory", blockedPathToVictory);
 
         return normalizedHeuristicValue(heuristics, BLACK_WEIGHTS);
     }

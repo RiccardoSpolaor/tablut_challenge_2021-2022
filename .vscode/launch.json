@@ -87,7 +87,7 @@
             "request": "launch",
             "mainClass": "it.unibo.ai.didattica.competition.tablut.dualCore.DualCoreTablut",
             "projectName": "Tablut2019",
-            "args": ["WHITE", "60"]
+            "args": ["WHITE", "30"]
         }
     ]
 }
