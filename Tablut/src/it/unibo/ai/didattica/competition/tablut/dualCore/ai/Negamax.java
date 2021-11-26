@@ -17,38 +17,12 @@ public final class Negamax {
     private final HeuristicsTable heuristicsTable;
     private final TraspositionTable traspositionTable;
     private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    private final ConcurrentCounter counter = new ConcurrentCounter();
 
     public Negamax(int color, int timeout) {
         this.color = color;
         this.timeout = timeout - 1;
         traspositionTable = new TraspositionTable(TABLE_SIZE);
         heuristicsTable = new HeuristicsTable(TABLE_SIZE);
-    }
-
-    private static class ConcurrentCounter {
-        private int count = 0;
-        private boolean waiting = false;
-
-        public synchronized void increase() {
-            while (waiting) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            waiting = true;
-            count++;
-            waiting = false;
-            notifyAll();
-        }
-        public void reset() {
-            count = 0;
-        }
-        public int getCount(){
-            return count;
-        }
     }
 
     private class NegamaxThread implements Callable<NegamaxResult> {
@@ -87,7 +61,6 @@ public final class Negamax {
 
     public Action findBestMove(State state) {
         traspositionTable.clear();
-        counter.reset();
         Node root = new Node(state, state, null);
 
         // ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -107,14 +80,12 @@ public final class Negamax {
         float bestValue = Float.NEGATIVE_INFINITY;
 
         NegamaxResult bestResult = null;
-        List<NegamaxResult> results = new ArrayList<NegamaxResult>();
         for (int i = 0; i < childNodes.size(); i++) {
             try {
                 if (((System.currentTimeMillis() - started) / 1000) >= timeout) {
                     break;
                 }
                 NegamaxResult actualResult = futureResults.get(i).get(timeout - (System.currentTimeMillis() - started) / 1000, TimeUnit.SECONDS );
-                results.add(actualResult);
                 float actualValue = actualResult.getValue();
                 if (actualValue > bestValue) {
                     bestResult = actualResult;
@@ -203,7 +174,6 @@ public final class Negamax {
         }
 
         if (depth == 0) {
-            counter.increase();
             return current_color * node.getHeuristicValue();
         }
 
